@@ -1,4 +1,4 @@
-import { axisBottom, axisLeft } from 'd3-axis';
+import { axisBottom, axisLeft, axisRight } from 'd3-axis';
 import { timeFormat } from 'd3-time-format';
 
 const UNIT_DISPLAY = {
@@ -93,4 +93,64 @@ export const drawAxisYLabel = function (elem, {unit}, label) {
     }
 
     return label;
+};
+
+export const drawAxisYLabelLithologyDepth = function (elem, {unit}, label) {
+        // Create a span for the label, if it doesn't already exist
+    label = label || elem.append('span')
+        .classed('y-label', true);
+
+    // Set the label text
+    if (unit) {
+        unit = unit.toLowerCase();
+        const unitDisplay = UNIT_DISPLAY[unit] || unit;
+        label.text(`Depth below land surface in ${unitDisplay}`);
+    } else {
+        label.text('Depth below land surface');
+    }
+
+    return label;
+};
+
+export const drawAxisYLabelLithologyElevation = function (elem, {unit}, label) {
+        // Create a span for the label, if it doesn't already exist
+    label = label || elem.append('span')
+        .classed('y-label', true);
+    label.text('Elevation');
+
+    return label;
+};
+
+export const drawAxisSecondY = function (elem, {yScale, layout}, callback, context) {
+    context = context || {};
+    context.axis = context.axis || elem
+        .append('g')
+            .classed('y-axis-2nd', true);
+    context.bBox = context.bBox || {};
+
+    context.axis.transition().duration(25)
+        .attr('transform', `translate(${layout.x  + layout.width}, ${layout.y} )`)
+        .call(axisLeft()
+            .scale(yScale)
+            .tickPadding(1)
+            .tickSizeOuter(30))
+        .on('end', function () {
+            try {
+                const newBBox = context.axis.node().getBBox();
+                if (newBBox.x !== context.bBox.x ||
+                        newBBox.y !== context.bBox.y ||
+                        newBBox.width !== context.bBox.width ||
+                        newBBox.height !== context.bBox.height) {
+                    context.bBox = newBBox;
+                    callback(newBBox);
+                }
+            } catch (error) {
+                // See here for details on why we ignore getBBox() exceptions
+                // to fix issues with Firefox:
+                // https://bugzilla.mozilla.org/show_bug.cgi?id=612118
+                // https://stackoverflow.com/questions/28282295/getbbox-of-svg-when-hidden.
+            }
+        });
+
+    return context;
 };

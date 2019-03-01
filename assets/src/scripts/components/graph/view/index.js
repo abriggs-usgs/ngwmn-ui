@@ -12,7 +12,7 @@ import {
     getLithology, getLithologyVisibility, getScaleX, getScaleY, getViewBox,
     getWellWaterLevel, setAxisYBBox, setCursor, setContainerSize
 } from '../state';
-import { drawAxisX, drawAxisY, drawAxisYLabel } from './axes';
+import { drawAxisX, drawAxisY, drawAxisSecondY, drawAxisYLabel, drawAxisYLabelLithologyDepth, drawAxisYLabelLithologyElevation } from './axes';
 import addBrushZoomBehavior from './brush-zoom';
 import drawConstruction from './construction';
 import { drawFocusCircle, drawFocusLine, drawTooltip } from './cursor';
@@ -108,14 +108,26 @@ const drawChart = function (elem, store, opts, chartType) {
                     yScale: getScaleY(opts, chartType)
                 }))));
         })
-        // Draw the y-axis, only for the main chart.
-        .call(callIf(chartType === 'main', link(store, drawAxisY, createStructuredSelector({
+        // Draw the y-axis, for the main chart and lithology charts.
+        .call(callIf(chartType === 'main' || chartType === 'lithology', link(store, drawAxisY, createStructuredSelector({
             yScale: getScaleY(opts, chartType),
             layout: getChartPosition(opts, chartType)
         }), (bBox) => {
             // When the bounding box has changed, update the state with it.
             store.dispatch(setAxisYBBox(opts.id, bBox));
         })))
+
+// TODO fix this axis
+        .call(callIf(chartType === 'lithology', link(store, drawAxisSecondY, createStructuredSelector({
+            yScale: getScaleY(opts, chartType),
+            layout: getChartPosition(opts, chartType)
+        }), (bBox) => {
+            // When the bounding box has changed, update the state with it.
+            store.dispatch(setAxisYBBox(opts.id, bBox));
+        })))
+
+
+
         // Draw the x-axis, only for the main chart.
         .call(callIf(chartType === 'main', link(store, drawAxisX, createStructuredSelector({
             xScale: getScaleX(opts, chartType),
@@ -161,6 +173,11 @@ const drawConstructionGraph = (opts) => (elem, store) => {
     // Append the chart and axis labels, scoped to .chart-container
     elem.append('div')
         .classed('chart-container', true)
+ // TODO fix label padding
+         .call(link(store, drawAxisYLabelLithologyDepth, createStructuredSelector({
+                unit: getCurrentWaterLevelUnit(opts)
+            })))
+
         .call(elem => {
             // Append an SVG container that we will draw to
             elem.append('svg')
@@ -174,7 +191,15 @@ const drawConstructionGraph = (opts) => (elem, store) => {
                     drawChart(svg, store, opts, 'construction');
                 });
         })
+
+// TODO fix this. It makes the litho too small
+//          .call(link(store, drawAxisYLabelLithologyElevation, createStructuredSelector({
+//                 unit: getCurrentWaterLevelUnit(opts)
+//             })))
+
+
         .call(observeSize, opts, store);
+
 };
 
 /**
