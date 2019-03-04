@@ -1,5 +1,6 @@
 import { axisBottom, axisLeft, axisRight } from 'd3-axis';
 import { timeFormat } from 'd3-time-format';
+import { getWellElevation } from '../state/well-log.js';
 
 const UNIT_DISPLAY = {
     ft: 'feet',
@@ -96,10 +97,9 @@ export const drawAxisYLabel = function (elem, {unit}, label) {
 };
 
 export const drawAxisYLabelLithologyDepth = function (elem, {unit}, label) {
-        // Create a span for the label, if it doesn't already exist
+    // Create a span for the label, if it doesn't already exist
     label = label || elem.append('span')
         .classed('y-label', true);
-
     // Set the label text
     if (unit) {
         unit = unit.toLowerCase();
@@ -118,25 +118,29 @@ export const drawAxisYLabelLithologyElevation = function (elem, {unit}, label) {
         .classed('y-label', true);
     label.text('Elevation');
 
+    let test = getWellElevation();
+
+
+
     return label;
 };
 
-export const drawAxisSecondY = function (elem, {yScale, layout}, callback, context) {
+export const drawAxisYElevation = function (elem, {yScaleRight, layout}, callback, context) {
     context = context || {};
-    context.axisRight = context.axisRight || elem
+    context.axis = context.axis || elem
         .append('g')
             .classed('y-axis-2nd', true);
     context.bBox = context.bBox || {};
 
-    context.axisRight.transition().duration(25)
+    context.axis
         .attr('transform', `translate(${layout.x  + layout.width}, ${layout.y} )`)
         .call(axisLeft()
-            .scale(yScale)
+            .scale(yScaleRight)
             .tickPadding(3)
             .tickSizeOuter(0))
         .on('end', function () {
             try {
-                const newBBox = context.axisRight.node().getBBox();
+                const newBBox = context.axis.node().getBBox();
                 if (newBBox.x !== context.bBox.x ||
                         newBBox.y !== context.bBox.y ||
                         newBBox.width !== context.bBox.width ||

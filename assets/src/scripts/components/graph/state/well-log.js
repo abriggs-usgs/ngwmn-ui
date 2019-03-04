@@ -24,6 +24,15 @@ export const getCurrentWellLog = memoize(opts => createSelector(
     }
 ));
 
+
+
+export const getWellElevation = memoize(opts => createSelector(
+    getCurrentWellLog(opts),
+    (elevation) => {
+        return wellLog.elevation;
+    }
+));
+
 /**
  * Returns the well log entries for the current site.
  * @param  {Object} state       Redux state

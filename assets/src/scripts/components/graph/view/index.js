@@ -9,10 +9,10 @@ import { getSiteKey } from '../../../services/site-key';
 import {
     getChartPoints, getChartPosition, getConstructionElements,
     getCurrentWaterLevelUnit, getCursor, getCursorDatum, getLineSegments,
-    getLithology, getLithologyVisibility, getScaleX, getScaleY, getViewBox,
+    getLithology, getLithologyVisibility, getScaleX, getScaleY, getScaleYElevation, getViewBox,
     getWellWaterLevel, setAxisYBBox, setCursor, setContainerSize
 } from '../state';
-import { drawAxisX, drawAxisY, drawAxisSecondY, drawAxisYLabel, drawAxisYLabelLithologyDepth, drawAxisYLabelLithologyElevation } from './axes';
+import { drawAxisX, drawAxisY, drawAxisYElevation, drawAxisYLabel, drawAxisYLabelLithologyDepth, drawAxisYLabelLithologyElevation } from './axes';
 import addBrushZoomBehavior from './brush-zoom';
 import drawConstruction from './construction';
 import { drawFocusCircle, drawFocusLine, drawTooltip } from './cursor';
@@ -118,8 +118,8 @@ const drawChart = function (elem, store, opts, chartType) {
         })))
 
 // TODO fix this axis
-        .call(callIf(chartType === 'lithology', link(store, drawAxisSecondY, createStructuredSelector({
-            yScale: getScaleY(opts, chartType),
+        .call(callIf(chartType === 'lithology', link(store, drawAxisYElevation, createStructuredSelector({
+            yScaleRight: getScaleYElevation(opts, chartType),
             layout: getChartPosition(opts, chartType)
         }), (bBox) => {
             // When the bounding box has changed, update the state with it.

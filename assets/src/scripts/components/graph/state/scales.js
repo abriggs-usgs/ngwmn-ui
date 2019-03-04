@@ -4,6 +4,7 @@ import { createSelector } from 'reselect';
 
 import { getChartPosition } from './layout';
 import { getDomainX, getDomainY } from './points';
+import { getWellElevation } from '../state/well-log';
 
 
 /**
@@ -32,6 +33,19 @@ export const getScaleY = memoize((opts, chartType) => createSelector(
     (domainY, size) => {
         return scaleLinear()
             .domain(domainY)
+            .range([size.y, size.y + size.height]);
+    }
+));
+
+
+
+export const getScaleYElevation = memoize((opts, chartType) => createSelector(
+    getDomainY(opts, chartType),
+    getChartPosition(opts, chartType),
+    getWellElevation(opts),
+    (domainY, size, elevation) => {
+        return scaleLinear()
+            .domain([domainY[0] + elevation.value, domainY[1] - elevation.value])
             .range([size.y, size.y + size.height]);
     }
 ));
