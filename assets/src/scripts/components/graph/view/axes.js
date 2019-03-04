@@ -123,20 +123,20 @@ export const drawAxisYLabelLithologyElevation = function (elem, {unit}, label) {
 
 export const drawAxisSecondY = function (elem, {yScale, layout}, callback, context) {
     context = context || {};
-    context.axis = context.axis || elem
+    context.axisRight = context.axisRight || elem
         .append('g')
             .classed('y-axis-2nd', true);
     context.bBox = context.bBox || {};
 
-    context.axis.transition().duration(25)
+    context.axisRight.transition().duration(25)
         .attr('transform', `translate(${layout.x  + layout.width}, ${layout.y} )`)
         .call(axisLeft()
             .scale(yScale)
-            .tickPadding(1)
-            .tickSizeOuter(30))
+            .tickPadding(3)
+            .tickSizeOuter(0))
         .on('end', function () {
             try {
-                const newBBox = context.axis.node().getBBox();
+                const newBBox = context.axisRight.node().getBBox();
                 if (newBBox.x !== context.bBox.x ||
                         newBBox.y !== context.bBox.y ||
                         newBBox.width !== context.bBox.width ||
