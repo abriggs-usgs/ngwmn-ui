@@ -7,7 +7,7 @@ import { callIf } from 'ngwmn/lib/utils';
 import { getSiteKey } from '../../../services/site-key';
 
 import {
-    getChartPoints, getChartPosition, getConstructionElements,
+    getChartPoints, getChartPosition, getConstructionElements, getConstructionDiagramViewBox,
     getCurrentWaterLevelUnit, getCursor, getCursorDatum, getLineSegments,
     getLithology, getLithologyVisibility, getScaleX, getScaleY, getScaleYElevation, getViewBox,
     getWellWaterLevel, setAxisYBBox, setAxisYElevationBBox, setCursor, setContainerSize
@@ -194,7 +194,7 @@ const drawConstructionGraph = (opts) => (elem, store) => {
                 .attr('xmlns', 'http://www.w3.org/2000/svg')
                 .call(link(store, (svg, viewBox) => {
                     svg.attr('viewBox', `${viewBox.left} ${viewBox.top} ${viewBox.right - viewBox.left} ${viewBox.bottom - viewBox.top}`);
-                }, getViewBox(opts)))
+                },  getConstructionDiagramViewBox(opts)))
                 .call(svg => {
                     // Draw the charts
                     drawChart(svg, store, opts, 'lithology');

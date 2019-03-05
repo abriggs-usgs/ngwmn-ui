@@ -144,6 +144,18 @@ export const getAxisYBBox = memoize(opts => createSelector(
     }
 ));
 
+export const getAxisYElevationBBox = memoize(opts => createSelector(
+    state => state[MOUNT_POINT].axisYElevationBBoxes || {},
+    (axisYElevationBBoxes) => {
+        return axisYElevationBBoxes[opts.id] || {
+            x: 0,
+            y: 0,
+            width: 0,
+            height: 0
+        };
+    }
+));
+
 
 /**
  * Returns the viewBox of the chart's SVG node, taking into account the size of
@@ -162,6 +174,24 @@ export const getViewBox = memoize(opts => createSelector(
             left: axisYBBox.x,
             top: 0,
             right: axisYBBox.x + width,
+            bottom: height
+        };
+    }
+));
+
+
+
+export const getConstructionDiagramViewBox = memoize(opts => createSelector(
+    getContainerSize(opts),
+    getAxisYBBox(opts),
+    (containerSize, axisYElevationBBox) => {
+        const aspectRatio = containerSize.height / containerSize.width || 0;
+        const width = containerSize.width + axisYElevationBBox.width + FOCUS_CIRCLE_RADIUS;
+        const height = width * aspectRatio;
+        return {
+            left: axisYElevationBBox.x,
+            top: 0,
+            right: axisYElevationBBox.x + width,
             bottom: height
         };
     }
