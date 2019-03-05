@@ -113,29 +113,31 @@ export const drawAxisYLabelLithologyDepth = function (elem, {unit}, label) {
 };
 
 export const drawAxisYLabelLithologyElevation = function (elem, {unit}, label) {
-        // Create a span for the label, if it doesn't already exist
+    // Create a span for the label, if it doesn't already exist
     label = label || elem.append('span')
         .classed('y-label', true);
-    label.text('Elevation');
 
-    let test = getWellElevation();
-
-
-
+    if (unit) {
+        unit = unit.toLowerCase();
+        const unitDisplay = UNIT_DISPLAY[unit] || unit;
+        label.text(`Elevation in ${unitDisplay}`);
+    } else {
+        label.text('Elevation');
+    }
     return label;
 };
 
-export const drawAxisYElevation = function (elem, {yScaleRight, layout}, callback, context) {
+export const drawAxisYElevation = function (elem, {yScaleRight: yScaleElevation, layout}, callback, context) {
     context = context || {};
     context.axis = context.axis || elem
         .append('g')
-            .classed('y-axis-2nd', true);
+            .classed('y-axis', true);
     context.bBox = context.bBox || {};
 
     context.axis
         .attr('transform', `translate(${layout.x  + layout.width}, ${layout.y} )`)
-        .call(axisLeft()
-            .scale(yScaleRight)
+        .call(axisRight()
+            .scale(yScaleElevation)
             .tickPadding(3)
             .tickSizeOuter(0))
         .on('end', function () {

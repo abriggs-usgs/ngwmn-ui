@@ -8,6 +8,7 @@ import { FOCUS_CIRCLE_RADIUS } from '../view/cursor';
 const MOUNT_POINT = 'components/graph/layout';
 const GRAPH_SIZE_SET = `${MOUNT_POINT}/GRAPH_SIZE_SET`;
 const AXIS_Y_BBOX_SET = `${MOUNT_POINT}/AXIS_Y_BBOX_SET`;
+const AXIS_Y_ELEVATION_BBOX_SET = `${MOUNT_POINT}/AXIS_Y_ELEVATION_BBOX_SET`;
 const VIEWPORT_RESET = `${MOUNT_POINT}/VIEWPORT_RESET`;
 const VIEWPORT_SET = `${MOUNT_POINT}/VIEWPORT_SET`;
 
@@ -107,6 +108,25 @@ export const setAxisYBBox = function (id, {x, y, width, height}) {
     };
 };
 
+
+export const setAxisYElevationBBox = function (id, {x, y, width, height}) {
+    return {
+        type: AXIS_Y_ELEVATION_BBOX_SET,
+        payload: {
+            id,
+            axisYBBox: {
+                x,
+                y,
+                width,
+                height
+            }
+        }
+    };
+};
+
+
+
+
 /**
  * Selector to return the current container size
  * @param  {Object} state Redux state
@@ -123,6 +143,7 @@ export const getAxisYBBox = memoize(opts => createSelector(
         };
     }
 ));
+
 
 /**
  * Returns the viewBox of the chart's SVG node, taking into account the size of
@@ -214,6 +235,14 @@ export const reducer = function (state = {}, action) {
                 axisYBBoxes: {
                     ...state.axisYBBoxes,
                     ...{[action.payload.id]: action.payload.axisYBBox}
+                }
+            };
+        case AXIS_Y_ELEVATION_BBOX_SET:
+            return {
+                ...state,
+                axisYElevationBBoxes: {
+                    ...state.axisYElevationBBoxes,
+                    ...{[action.payload.id]: action.payload.axisYElevationBBoxes}
                 }
             };
         case VIEWPORT_SET:

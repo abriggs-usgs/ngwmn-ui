@@ -28,7 +28,7 @@ export const getCurrentWellLog = memoize(opts => createSelector(
 
 export const getWellElevation = memoize(opts => createSelector(
     getCurrentWellLog(opts),
-    (elevation) => {
+    (wellLog) => {
         return wellLog.elevation;
     }
 ));
