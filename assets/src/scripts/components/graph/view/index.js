@@ -7,7 +7,7 @@ import { callIf } from 'ngwmn/lib/utils';
 import { getSiteKey } from '../../../services/site-key';
 
 import {
-    getChartPoints, getChartPosition, getConstructionElements, getConstructionDiagramViewBox,
+    getChartPoints, getChartPosition, getConstructionElements,
     getCurrentWaterLevelUnit, getCursor, getCursorDatum, getLineSegments,
     getLithology, getLithologyVisibility, getScaleX, getScaleY, getScaleYElevation, getViewBox,
     getWellWaterLevel, setAxisYBBox, setAxisYElevationBBox, setCursor, setContainerSize
@@ -30,6 +30,7 @@ import {getSelectedLithologyId} from "../../well-log/state";
  * @param  {String} chartType Kind of chart
  */
 const drawClipPath = function (elem, store, opts, chartType) {
+console.log('drawClipPath caled')
     elem.append('defs')
         .append('clipPath')
             .attr('id', `${chartType}-clip-path`)
@@ -43,6 +44,7 @@ const drawClipPath = function (elem, store, opts, chartType) {
 };
 
 const observeSize = function (elem, opts, store) {
+console.log("const observeSize = function (elem, opts, store) {\n called")
     // Create an observer on the .chart-container node.
     // Here, we use a ResizeObserver polyfill to trigger redraws when
     // the CSS-driven size of our container changes.
@@ -68,6 +70,7 @@ const observeSize = function (elem, opts, store) {
  * @param  {Object} options {agencyCode, siteId} of site to draw
  */
 const drawChart = function (elem, store, opts, chartType) {
+console.log (`drawChart called ${JSON.stringify(chartType)}`)
     // Each chart gets its own group container, classed .chart
     return elem.append('g')
         .classed('chart', true)
@@ -108,8 +111,9 @@ const drawChart = function (elem, store, opts, chartType) {
                     yScale: getScaleY(opts, chartType)
                 }))));
         })
+
         // Draw the y-axis, for the main chart.
-        .call(callIf(chartType === 'main', link(store, drawAxisY, createStructuredSelector({
+        .call(callIf(chartType === 'main' || chartType === 'lithology', link(store, drawAxisY, createStructuredSelector({
             yScale: getScaleY(opts, chartType),
             layout: getChartPosition(opts, chartType)
         }), (bBox) => {
@@ -118,26 +122,13 @@ const drawChart = function (elem, store, opts, chartType) {
         })))
 
 // TODO fix this axis -- it is in the DOM but will not show
-        // Draw the y-axis, for the lithology chart.
-        .call(callIf(chartType === 'lithology', link(store, drawAxisY, createStructuredSelector({
-            yScale: getScaleY(opts, chartType),
-            layout: getChartPosition(opts, chartType)
-        }), (bBox) => {
-            // When the bounding box has changed, update the state with it.
-            store.dispatch(setAxisYElevationBBox(opts.id, bBox));
-        })))
-
-// TODO fix this axis -- it is in the DOM but will not show
         .call(callIf(chartType === 'lithology', link(store, drawAxisYElevation, createStructuredSelector({
-            yScaleRight: getScaleYElevation(opts, chartType),
+            yScale: getScaleYElevation(opts, chartType),
             layout: getChartPosition(opts, chartType)
         }), (bBox) => {
             // When the bounding box has changed, update the state with it.
             store.dispatch(setAxisYElevationBBox(opts.id, bBox));
         })))
-
-
-
         // Draw the x-axis, only for the main chart.
         .call(callIf(chartType === 'main', link(store, drawAxisX, createStructuredSelector({
             xScale: getScaleX(opts, chartType),
@@ -180,6 +171,7 @@ const drawChart = function (elem, store, opts, chartType) {
  * @return {Object}       SVG node of rendered graph
  */
 const drawConstructionGraph = (opts) => (elem, store) => {
+console.log('drawConstructionGraph called')
     // Append the chart and axis labels, scoped to .chart-container
     elem.append('div')
         .classed('chart-container', true)
@@ -194,7 +186,7 @@ const drawConstructionGraph = (opts) => (elem, store) => {
                 .attr('xmlns', 'http://www.w3.org/2000/svg')
                 .call(link(store, (svg, viewBox) => {
                     svg.attr('viewBox', `${viewBox.left} ${viewBox.top} ${viewBox.right - viewBox.left} ${viewBox.bottom - viewBox.top}`);
-                },  getConstructionDiagramViewBox(opts)))
+                },  getViewBox(opts)))
                 .call(svg => {
                     // Draw the charts
                     drawChart(svg, store, opts, 'lithology');
@@ -217,6 +209,7 @@ const drawConstructionGraph = (opts) => (elem, store) => {
  * @return {Object}       SVG node of rendered graph
  */
 const drawWaterLevelsGraph = (opts) => (elem, store) => {
+console.log('called drawWaterLevelsGraph')
     elem
         .append('div')
             .html('Water Levels, in feet below land surface')
@@ -259,6 +252,7 @@ const drawWaterLevelsGraph = (opts) => (elem, store) => {
 };
 
 export default (opts) => (elem, store) => {
+console.log("called default")
     // Append a container for the graph.
     // .graph-container is used to scope all the CSS styles.
     const graphContainer = elem
@@ -266,8 +260,10 @@ export default (opts) => (elem, store) => {
             .classed('graph-container', true);
 
     if (opts.graphType === 'water-levels') {
+console.log("called default in if for  graphType water levels")
         drawWaterLevelsGraph(opts)(graphContainer, store);
     } else if (opts.graphType === 'construction') {
+console.log("called default in if for  graphType construction")
         drawConstructionGraph(opts)(graphContainer, store);
     }
 };

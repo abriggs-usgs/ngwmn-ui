@@ -17,6 +17,7 @@ const UNIT_DISPLAY = {
  * @return {Object}                  Container for axis (g element)
  */
 export const drawAxisX = function (elem, {xScale, layout}, axis) {
+console.log(`called drawAxisX, this is axis ${JSON.stringify(axis)}`)
     axis = axis || elem
         .append('g')
             .classed('x-axis', true);
@@ -39,6 +40,7 @@ export const drawAxisX = function (elem, {xScale, layout}, axis) {
  * @return {Object}                         Context for next invocation
  */
 export const drawAxisY = function (elem, {yScale, layout}, callback, context) {
+console.log("called drawAxisY ")
     context = context || {};
     context.axis = context.axis || elem
         .append('g')
@@ -127,13 +129,13 @@ export const drawAxisYLabelLithologyElevation = function (elem, {unit}, label) {
     return label;
 };
 
-export const drawAxisYElevation = function (elem, {yScaleRight: yScaleElevation, layout}, callback, context) {
+export const drawAxisYElevation = function (elem, {yScale: yScaleElevation, layout}, callback, context) {
+console.log('drawAxisYElevation called')
     context = context || {};
     context.axis = context.axis || elem
         .append('g')
             .classed('y-axis', true);
     context.bBox = context.bBox || {};
-
     context.axis
         .attr('transform', `translate(${layout.x  + layout.width}, ${layout.y} )`)
         .call(axisRight()
@@ -157,6 +159,6 @@ export const drawAxisYElevation = function (elem, {yScaleRight: yScaleElevation,
                 // https://stackoverflow.com/questions/28282295/getbbox-of-svg-when-hidden.
             }
         });
-
+console.log(`drawAxisYElevation called. this is the context ${JSON.stringify(context)} `)
     return context;
 };

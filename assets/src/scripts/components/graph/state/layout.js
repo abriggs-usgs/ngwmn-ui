@@ -13,7 +13,7 @@ const VIEWPORT_RESET = `${MOUNT_POINT}/VIEWPORT_RESET`;
 const VIEWPORT_SET = `${MOUNT_POINT}/VIEWPORT_SET`;
 
 
-/**
+/**https://github.com/abriggs-usgs/ngwmn-ui/tree/NGWMN-1790_add_y_axis_to_well_diagram
  * Action creator to set the current viewport date range (x-axis)
  * @param {Date} startDate  Start date of viewport
  * @param {Date} endDate    End date of viewport
@@ -84,7 +84,9 @@ export const getContainerSize = memoize(opts => createSelector(
             height: 0
         };
     }
-));
+))
+console.log('called getContainerSize')
+;
 
 /**
  * Action creator to set the bounding box of the y-axis in the main chart.
@@ -166,9 +168,10 @@ export const getAxisYElevationBBox = memoize(opts => createSelector(
 export const getViewBox = memoize(opts => createSelector(
     getContainerSize(opts),
     getAxisYBBox(opts),
-    (containerSize, axisYBBox) => {
+    getAxisYElevationBBox(opts),
+    (containerSize, axisYBBox, axisYElevationBBox) => {
         const aspectRatio = containerSize.height / containerSize.width || 0;
-        const width = containerSize.width + axisYBBox.width + FOCUS_CIRCLE_RADIUS;
+        const width = containerSize.width + axisYBBox.width + axisYElevationBBox.width + FOCUS_CIRCLE_RADIUS;
         const height = width * aspectRatio;
         return {
             left: axisYBBox.x,
@@ -179,24 +182,7 @@ export const getViewBox = memoize(opts => createSelector(
     }
 ));
 
-
-
-export const getConstructionDiagramViewBox = memoize(opts => createSelector(
-    getContainerSize(opts),
-    getAxisYBBox(opts),
-    getAxisYElevationBBox(opts),
-    (containerSize, axisYBBox, axisYElevationBBox) => {
-        const aspectRatio = containerSize.height / containerSize.width || 0;
-        const width = containerSize.width + axisYElevationBBox.width + FOCUS_CIRCLE_RADIUS;
-        const height = width * aspectRatio;
-        return {
-            left: axisYElevationBBox.x,
-            top: 0,
-            right: getAxisYElevationBBox.x + width,
-            bottom: height
-        };
-    }
-));
+console.log('called getConstructionDiagramViewBox');
 
 /**
  * Returns the position of a chart type within the graph container.
@@ -251,6 +237,7 @@ export const getChartPosition = memoize((opts, chartType) => createSelector(
  * @return {Object}        New state
  */
 export const reducer = function (state = {}, action) {
+console.log(`called the reducer, this was the action ${JSON.stringify(action)}`)
     switch (action.type) {
         case GRAPH_SIZE_SET:
             return {

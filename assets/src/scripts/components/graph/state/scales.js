@@ -35,7 +35,9 @@ export const getScaleY = memoize((opts, chartType) => createSelector(
             .domain(domainY)
             .range([size.y, size.y + size.height]);
     }
-));
+))
+console.log('getScaleY called')
+;
 
 
 
@@ -48,4 +50,6 @@ export const getScaleYElevation = memoize((opts, chartType) => createSelector(
             .domain([domainY[0] + elevation.value, domainY[1] - elevation.value])
             .range([size.y, size.y + size.height]);
     }
-));
+))
+console.log('getScaleYElevation called')
+;
