@@ -184,14 +184,15 @@ export const getViewBox = memoize(opts => createSelector(
 export const getConstructionDiagramViewBox = memoize(opts => createSelector(
     getContainerSize(opts),
     getAxisYBBox(opts),
-    (containerSize, axisYElevationBBox) => {
+    getAxisYElevationBBox(opts),
+    (containerSize, axisYBBox, axisYElevationBBox) => {
         const aspectRatio = containerSize.height / containerSize.width || 0;
         const width = containerSize.width + axisYElevationBBox.width + FOCUS_CIRCLE_RADIUS;
         const height = width * aspectRatio;
         return {
             left: axisYElevationBBox.x,
             top: 0,
-            right: axisYElevationBBox.x + width,
+            right: getAxisYElevationBBox.x + width,
             bottom: height
         };
     }
