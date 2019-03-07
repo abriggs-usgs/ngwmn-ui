@@ -1,6 +1,5 @@
 import { axisBottom, axisLeft, axisRight } from 'd3-axis';
 import { timeFormat } from 'd3-time-format';
-import { getWellElevation } from '../state/well-log.js';
 
 const UNIT_DISPLAY = {
     ft: 'feet',
@@ -17,7 +16,6 @@ const UNIT_DISPLAY = {
  * @return {Object}                  Container for axis (g element)
  */
 export const drawAxisX = function (elem, {xScale, layout}, axis) {
-console.log(`called drawAxisX, this is axis ${JSON.stringify(axis)}`)
     axis = axis || elem
         .append('g')
             .classed('x-axis', true);
@@ -40,7 +38,6 @@ console.log(`called drawAxisX, this is axis ${JSON.stringify(axis)}`)
  * @return {Object}                         Context for next invocation
  */
 export const drawAxisY = function (elem, {yScale, layout}, callback, context) {
-console.log("called drawAxisY ")
     context = context || {};
     context.axis = context.axis || elem
         .append('g')
@@ -114,15 +111,15 @@ export const drawAxisYLabelLithologyDepth = function (elem, {unit}, label) {
     return label;
 };
 
-export const drawAxisYLabelLithologyElevation = function (elem, {unit}, label) {
+export const drawAxisYLabelLithologyElevation = function (elem, {unit, wellLog}, label) {
     // Create a span for the label, if it doesn't already exist
     label = label || elem.append('span')
         .classed('y-label', true);
-
-    if (unit) {
+    if (unit && wellLog) {
         unit = unit.toLowerCase();
+        const elevationScheme = wellLog['elevation']['scheme'];
         const unitDisplay = UNIT_DISPLAY[unit] || unit;
-        label.text(`Elevation in ${unitDisplay}`);
+        label.text(`Elevation(${elevationScheme}) in ${unitDisplay}`);
     } else {
         label.text('Elevation');
     }
@@ -130,7 +127,6 @@ export const drawAxisYLabelLithologyElevation = function (elem, {unit}, label) {
 };
 
 export const drawAxisYElevation = function (elem, {yScale: yScaleElevation, layout}, callback, context) {
-console.log('drawAxisYElevation called')
     context = context || {};
     context.axis = context.axis || elem
         .append('g')
@@ -159,6 +155,5 @@ console.log('drawAxisYElevation called')
                 // https://stackoverflow.com/questions/28282295/getbbox-of-svg-when-hidden.
             }
         });
-console.log(`drawAxisYElevation called. this is the context ${JSON.stringify(context)} `)
     return context;
 };

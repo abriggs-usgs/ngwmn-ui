@@ -13,7 +13,7 @@ const VIEWPORT_RESET = `${MOUNT_POINT}/VIEWPORT_RESET`;
 const VIEWPORT_SET = `${MOUNT_POINT}/VIEWPORT_SET`;
 
 
-/**https://github.com/abriggs-usgs/ngwmn-ui/tree/NGWMN-1790_add_y_axis_to_well_diagram
+/**
  * Action creator to set the current viewport date range (x-axis)
  * @param {Date} startDate  Start date of viewport
  * @param {Date} endDate    End date of viewport
@@ -84,9 +84,7 @@ export const getContainerSize = memoize(opts => createSelector(
             height: 0
         };
     }
-))
-console.log('called getContainerSize')
-;
+));
 
 /**
  * Action creator to set the bounding box of the y-axis in the main chart.
@@ -182,7 +180,13 @@ export const getViewBox = memoize(opts => createSelector(
     }
 ));
 
-console.log('called getConstructionDiagramViewBox');
+export const getAspectRatio = memoize(opts => createSelector(
+    getContainerSize(opts),
+    (containerSize) => {
+        return  containerSize.width / containerSize.height|| 0;
+    }
+));
+
 
 /**
  * Returns the position of a chart type within the graph container.
@@ -190,39 +194,39 @@ console.log('called getConstructionDiagramViewBox');
  * @return {Function}     Selector for chart position
  */
 export const getChartPosition = memoize((opts, chartType) => createSelector(
-    getViewBox(opts),
-    (viewBox) => {
-        const height = viewBox.bottom - viewBox.top;
-        const width = viewBox.right;
+    getAspectRatio(opts),
+    (aspectRatio) => {
         const PADDING = 10;
+        const WIDTH = 1000;
+        const HEIGHT = WIDTH / aspectRatio;
         switch (chartType) {
             case 'main':
                 return {
                     x: 0,
                     y: 0,
-                    width: Math.max(width - FOCUS_CIRCLE_RADIUS - PADDING, FOCUS_CIRCLE_RADIUS),
-                    height: height * 0.8
+                    width: Math.max(WIDTH - FOCUS_CIRCLE_RADIUS - PADDING, FOCUS_CIRCLE_RADIUS),
+                    height: HEIGHT * 0.8
                 };
             case 'brush':
                 return {
                     x: 0,
-                    y: height * 0.8,
-                    width: Math.max(width - FOCUS_CIRCLE_RADIUS - PADDING, FOCUS_CIRCLE_RADIUS),
-                    height: height * 0.2
+                    y: HEIGHT * 0.8,
+                    width: Math.max(WIDTH - FOCUS_CIRCLE_RADIUS - PADDING, FOCUS_CIRCLE_RADIUS),
+                    height: HEIGHT * 0.2
                 };
             case 'lithology':
                 return {
                     x: 0,
                     y: 0,
-                    width: width,
-                    height: height
+                    width: WIDTH,
+                    height: HEIGHT
                 };
             case 'construction':
                 return {
-                    x: viewBox.right * 0.2,
+                    x: HEIGHT * 0.2,
                     y: 0,
-                    width: width * 0.6,
-                    height: height
+                    width: WIDTH * 0.6,
+                    height: HEIGHT
                 };
             default:
                 return null;
@@ -237,7 +241,6 @@ export const getChartPosition = memoize((opts, chartType) => createSelector(
  * @return {Object}        New state
  */
 export const reducer = function (state = {}, action) {
-console.log(`called the reducer, this was the action ${JSON.stringify(action)}`)
     switch (action.type) {
         case GRAPH_SIZE_SET:
             return {

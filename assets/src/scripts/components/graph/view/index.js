@@ -8,7 +8,7 @@ import { getSiteKey } from '../../../services/site-key';
 
 import {
     getChartPoints, getChartPosition, getConstructionElements,
-    getCurrentWaterLevelUnit, getCursor, getCursorDatum, getLineSegments,
+    getCurrentWaterLevelUnit, getCurrentWellLog, getCursor, getCursorDatum, getLineSegments,
     getLithology, getLithologyVisibility, getScaleX, getScaleY, getScaleYElevation, getViewBox,
     getWellWaterLevel, setAxisYBBox, setAxisYElevationBBox, setCursor, setContainerSize
 } from '../state';
@@ -19,7 +19,7 @@ import { drawFocusCircle, drawFocusLine, drawTooltip } from './cursor';
 import drawLegend from './legend';
 import drawLithology from './lithology';
 import drawWaterLevels from './water-levels';
-import {getSelectedLithologyId} from "../../well-log/state";
+import {getSelectedLithologyId, } from "../../well-log/state";
 
 
 /**
@@ -30,7 +30,6 @@ import {getSelectedLithologyId} from "../../well-log/state";
  * @param  {String} chartType Kind of chart
  */
 const drawClipPath = function (elem, store, opts, chartType) {
-console.log('drawClipPath caled')
     elem.append('defs')
         .append('clipPath')
             .attr('id', `${chartType}-clip-path`)
@@ -44,7 +43,6 @@ console.log('drawClipPath caled')
 };
 
 const observeSize = function (elem, opts, store) {
-console.log("const observeSize = function (elem, opts, store) {\n called")
     // Create an observer on the .chart-container node.
     // Here, we use a ResizeObserver polyfill to trigger redraws when
     // the CSS-driven size of our container changes.
@@ -70,7 +68,6 @@ console.log("const observeSize = function (elem, opts, store) {\n called")
  * @param  {Object} options {agencyCode, siteId} of site to draw
  */
 const drawChart = function (elem, store, opts, chartType) {
-console.log (`drawChart called ${JSON.stringify(chartType)}`)
     // Each chart gets its own group container, classed .chart
     return elem.append('g')
         .classed('chart', true)
@@ -171,7 +168,6 @@ console.log (`drawChart called ${JSON.stringify(chartType)}`)
  * @return {Object}       SVG node of rendered graph
  */
 const drawConstructionGraph = (opts) => (elem, store) => {
-console.log('drawConstructionGraph called')
     // Append the chart and axis labels, scoped to .chart-container
     elem.append('div')
         .classed('chart-container', true)
@@ -197,7 +193,7 @@ console.log('drawConstructionGraph called')
 // TODO fix this. It makes the litho too small
          .call(link(store, drawAxisYLabelLithologyElevation, createStructuredSelector({
                 unit: getCurrentWaterLevelUnit(opts),
-                // elevation: getWellElevation(opts)
+                wellLog: getCurrentWellLog(opts)
             })))
         .call(observeSize, opts, store);
 };
@@ -209,7 +205,6 @@ console.log('drawConstructionGraph called')
  * @return {Object}       SVG node of rendered graph
  */
 const drawWaterLevelsGraph = (opts) => (elem, store) => {
-console.log('called drawWaterLevelsGraph')
     elem
         .append('div')
             .html('Water Levels, in feet below land surface')
@@ -252,18 +247,14 @@ console.log('called drawWaterLevelsGraph')
 };
 
 export default (opts) => (elem, store) => {
-console.log("called default")
     // Append a container for the graph.
     // .graph-container is used to scope all the CSS styles.
     const graphContainer = elem
         .append('div')
             .classed('graph-container', true);
-
     if (opts.graphType === 'water-levels') {
-console.log("called default in if for  graphType water levels")
         drawWaterLevelsGraph(opts)(graphContainer, store);
     } else if (opts.graphType === 'construction') {
-console.log("called default in if for  graphType construction")
         drawConstructionGraph(opts)(graphContainer, store);
     }
 };
