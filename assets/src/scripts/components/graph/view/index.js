@@ -7,10 +7,27 @@ import { callIf } from 'ngwmn/lib/utils';
 import { getSiteKey } from '../../../services/site-key';
 
 import {
-    getChartPoints, getChartPosition, getConstructionElements,
-    getCurrentWaterLevelUnit, getCurrentWellLog, getCursor, getCursorDatum, getLineSegments,
-    getLithology, getLithologyVisibility, getScaleX, getScaleY, getScaleYElevation, getViewBox,
-    getWellWaterLevel, setAxisYBBox, setAxisYElevationBBox, setCursor, setContainerSize
+    getChartPoints,
+    getChartPosition,
+    getConstructionElements,
+    getCurrentWaterLevelUnit,
+    getCurrentWellLog,
+    getCursor,
+    getCursorDatum,
+    getLineSegments,
+    getLithology,
+    getLithologyVisibility,
+    getScaleX,
+    getScaleY,
+    getScaleYElevation,
+    getViewBox,
+    getWellWaterLevel,
+    setAxisYBBox,
+    setAxisYElevationBBox,
+    setCursor,
+    setContainerSize,
+    getAxisYBBox,
+    getAxisYElevationBBox
 } from '../state';
 import { drawAxisX, drawAxisY, drawAxisYElevation, drawAxisYLabel, drawAxisYLabelLithologyDepth, drawAxisYLabelLithologyElevation } from './axes';
 import addBrushZoomBehavior from './brush-zoom';
@@ -180,9 +197,27 @@ const drawConstructionGraph = (opts) => (elem, store) => {
             // Append an SVG container that we will draw to
             elem.append('svg')
                 .attr('xmlns', 'http://www.w3.org/2000/svg')
-                .call(link(store, (svg, viewBox) => {
-                    svg.attr('viewBox', `${viewBox.left} ${viewBox.top} ${viewBox.right - viewBox.left} ${viewBox.bottom - viewBox.top}`);
-                },  getViewBox(opts)))
+                .call(link(store, (svg) => {
+                    try {
+                        const newBBox = svg.node().getBBox();
+                        if (newBBox.x !== context.bBox.x ||
+                                newBBox.y !== context.bBox.y ||
+                                newBBox.width !== context.bBox.width ||
+                                newBBox.height !== context.bBox.height) {
+                            context.bBox = newBBox;
+                            svg.attr('viewBox', `${newBBox.x} ${newBBox.y} ${newBBox.width} ${newBBox.height}`);
+                        }
+                    } catch (error) {
+                        // See here for details on why we ignore getBBox() exceptions
+                        // to fix issues with Firefox:
+                        // https://bugzilla.mozilla.org/show_bug.cgi?id=612118
+                        // https://stackoverflow.com/questions/28282295/getbbox-of-svg-when-hidden.
+                    }
+
+                },  createStructuredSelector({
+                            axisYDepth: getAxisYBBox(opts),
+                            axisYElevation: getAxisYElevationBBox(opts)
+                    })))
                 .call(svg => {
                     // Draw the charts
                     drawChart(svg, store, opts, 'lithology');
