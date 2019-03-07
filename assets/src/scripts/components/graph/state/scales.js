@@ -45,7 +45,6 @@ export const getScaleYElevation = memoize((opts, chartType) => createSelector(
     // getWellElevation(opts),
     getCurrentWellLog(opts),
     (domainY, size, wellLog) => {
-console.log('this b da domain for elevation ' + [domainY[0] + wellLog['elevation']['value'], domainY[1] - wellLog['elevation']['value']])
         return scaleLinear()
             .domain([domainY[0] + wellLog['elevation']['value'], domainY[1] - wellLog['elevation']['value']])
             .range([size.y, size.y + size.height]);

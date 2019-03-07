@@ -188,7 +188,7 @@ const drawConstructionGraph = (opts) => (elem, store) => {
     // Append the chart and axis labels, scoped to .chart-container
     elem.append('div')
         .classed('chart-container', true)
- // TODO fix label padding and stop change in graph size
+// TODO fix this.
          .call(link(store, drawAxisYLabelLithologyDepth, createStructuredSelector({
                 unit: getCurrentWaterLevelUnit(opts)
             })))
@@ -225,7 +225,7 @@ const drawConstructionGraph = (opts) => (elem, store) => {
                 });
         })
 
-// TODO fix this. It makes the litho too small
+// TODO fix this.
          .call(link(store, drawAxisYLabelLithologyElevation, createStructuredSelector({
                 unit: getCurrentWaterLevelUnit(opts),
                 wellLog: getCurrentWellLog(opts)
