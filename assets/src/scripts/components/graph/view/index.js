@@ -9,7 +9,7 @@ import { getSiteKey } from '../../../services/site-key';
 import {
     getChartPoints, getChartPositionMain, getConstructionElements,
     getCurrentWaterLevelUnit, getCurrentWellLog, getCursor, getCursorDatum, getLineSegments,
-    getLithology, getLithologyVisibility, getScaleX, getScaleY, getScaleYElevation, getViewBoxMain,
+    getLithology, getLithologyVisibility, getScaleX, getScaleYMain, getScaleYElevation, getViewBoxMain,
     getWellWaterLevel, setAxisYMainBBox, setCursor, setContainerSizeMain
 } from '../state';
 
@@ -97,24 +97,24 @@ const drawChart = function (elem, store, opts, chartType) {
                     lineSegments: getLineSegments(opts),
                     chartPoints: getChartPoints(opts),
                     xScale: getScaleX(opts, chartType),
-                    yScale: getScaleY(opts, chartType)
+                    yScale: getScaleYMain(opts, chartType)
                 }), chartType)))
                 // Draw a vertical focus line representing the current cursor location.
                 .call(callIf(chartType !== 'construction' && chartType !== 'lithology', link(store, drawFocusLine, createStructuredSelector({
                     cursor: getCursor(opts),
                     xScale: getScaleX(opts, chartType),
-                    yScale: getScaleY(opts, chartType)
+                    yScale: getScaleYMain(opts, chartType)
                 }))))
                 // Draw a circle around the point nearest the current cursor location.
                 .call(callIf(chartType === 'main', link(store, drawFocusCircle, createStructuredSelector({
                     cursorPoint: getCursorDatum(opts),
                     xScale: getScaleX(opts, chartType),
-                    yScale: getScaleY(opts, chartType)
+                    yScale: getScaleYMain(opts, chartType)
                 }))));
         })
         // Draw the y-axis for the main.
         .call(callIf(chartType === 'main', link(store, drawAxisYMain, createStructuredSelector({
-            yScale: getScaleY(opts, chartType),
+            yScale: getScaleYMain(opts, chartType),
             layout: getChartPositionMain(opts, chartType)
         }), (bBox) => {
             // When the bounding box has changed, update the state with it.
@@ -122,7 +122,7 @@ const drawChart = function (elem, store, opts, chartType) {
         })))
         // Draw the y-axis for well depth on the lithology chart (which is part of the well diagram)
         .call(callIf(chartType === 'lithology', link(store, drawAxisYWellDiagramDepth, createStructuredSelector({
-            yScale: getScaleY(opts, chartType),
+            yScale: getScaleYMain(opts, chartType),
             layout: getChartPositionMain(opts, chartType)
         }), (bBox) => {
             // When the bounding box has changed, update the state with it.

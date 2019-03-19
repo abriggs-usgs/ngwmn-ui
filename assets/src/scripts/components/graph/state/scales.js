@@ -2,7 +2,7 @@ import { scaleLinear } from 'd3-scale';
 import memoize from 'fast-memoize';
 import { createSelector } from 'reselect';
 
-import { getChartPositionMain } from './layout';
+import {getChartPositionMain, getChartPositionWellDiagram} from './layout';
 import { getDomainX, getDomainY } from './points';
 import { getCurrentWellLog } from '../state/well-log';
 
@@ -27,9 +27,19 @@ export const getScaleX = memoize((opts, chartType) => createSelector(
  * @param  {Object} state   Redux store
  * @return {Function}       D3 scale function
  */
-export const getScaleY = memoize((opts, chartType) => createSelector(
+export const getScaleYMain = memoize((opts, chartType) => createSelector(
     getDomainY(opts, chartType),
     getChartPositionMain(opts, chartType),
+    (domainY, size) => {
+        return scaleLinear()
+            .domain(domainY)
+            .range([size.y, size.y + size.height]);
+    }
+));
+
+export const getScaleYWellDiagram = memoize((opts, chartType) => createSelector(
+    getDomainY(opts, chartType),
+    getChartPositionWellDiagram(opts, chartType),
     (domainY, size) => {
         return scaleLinear()
             .domain(domainY)

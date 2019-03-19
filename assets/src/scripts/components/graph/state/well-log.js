@@ -9,7 +9,7 @@ import {
 } from 'ngwmn/components/well-log/state/index';
 import { getCursorDatum } from './cursor';
 import { getChartPositionMain } from './layout';
-import { getScaleX, getScaleY } from './scales';
+import { getScaleX, getScaleYMain } from './scales';
 
 
 /**
@@ -62,7 +62,7 @@ export const getWellLogEntriesExtentY = memoize(opts => createSelector(
 export const getLithology = memoize((opts, chartType) => createSelector(
     getWellLogEntries(opts),
     getChartPositionMain(opts, chartType),
-    getScaleY(opts, chartType),
+    getScaleYMain(opts, chartType),
     (wellLogEntries, layout, yScale) => {
         return wellLogEntries.map(entry => {
             const loc = entry.shape.coordinates;
@@ -128,7 +128,7 @@ export const getWellLogExtentY = memoize((opts) => createSelector(
  */
 export const getWellWaterLevel = memoize((opts, chartType) => createSelector(
     getScaleX(opts, chartType),
-    getScaleY(opts, chartType),
+    getScaleYMain(opts, chartType),
     getCursorDatum(opts),
     getConstructionExtentY(opts),
     (xScale, yScale, cursorDatum, extentY) => {
@@ -187,7 +187,7 @@ const getRadiusScale = memoize((opts, chartType) => createSelector(
 export const getConstructionElements = memoize((opts, chartType) => createSelector(
     getDrawableElements(opts),
     getRadiusScale(opts, chartType),
-    getScaleY(opts, chartType),
+    getScaleYMain(opts, chartType),
     getSelectedConstructionId(opts.siteKey),
     (elements, xScale, yScale, selectedId) => {
         const parts = elements.map(element => {

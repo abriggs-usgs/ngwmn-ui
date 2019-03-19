@@ -1,6 +1,6 @@
 import getMockStore from 'ngwmn/store.mock';
 
-import { getScaleX, getScaleY, getScaleYElevation } from './scales';
+import { getScaleX, getScaleYMain, getScaleYElevation } from './scales';
 
 describe('graph component scales state', () => {
     const mockOpts = {
@@ -39,8 +39,8 @@ describe('graph component scales state', () => {
         });
     });
 
-    describe('getScaleY', () => {
-        let scale = getScaleY(mockOpts, 'main').resultFunc([0, 100], {y: 0, height: 50});
+    describe('getScaleYMain', () => {
+        let scale = getScaleYMain(mockOpts, 'main').resultFunc([0, 100], {y: 0, height: 50});
 
         it('scale created', () => {
             expect(scale).toEqual(jasmine.any(Function));
@@ -56,7 +56,7 @@ describe('graph component scales state', () => {
 
         it('works with mock state', () => {
             const store = getMockStore();
-            expect(getScaleY(mockOpts, 'main')(store.getState())).not.toBe(null);
+            expect(getScaleYMain(mockOpts, 'main')(store.getState())).not.toBe(null);
         });
     });
 
@@ -77,7 +77,7 @@ describe('graph component scales state', () => {
 
         it('works with mock state', () => {
             const store = getMockStore();
-            expect(getScaleY(mockOpts, 'main')(store.getState())).not.toBe(null);
+            expect(getScaleYMain(mockOpts, 'main')(store.getState())).not.toBe(null);
         });
     });
 });
