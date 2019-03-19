@@ -316,26 +316,21 @@ export const getChartPositionWellDiagram = memoize((opts, chartType) => createSe
         const width = viewBox.right;
         const PADDING = 10;
         switch (chartType) {
-            case 'lithology':
+           // x: adjusts the horizontal starting point of well lithology chart within the SVG view box
+           // Note: (x: viewBox.right * 1) well construction chart is out of the SVG view box to the right
+           // Note: (x: viewBox.right * 0) start of well construction chart touches edge of SVG view box to the left
+           case 'lithology':
                 return {
-                    // x: adjusts the horizontal starting point of well lithology chart within the SVG view box
-                    // Note: (x: viewBox.right * 1) well construction chart is out of the SVG view box to the right
-                    // Note: (x: viewBox.right * 0) start of well construction chart touches edge of SVG view box to the left
-                    x: viewBox.right * 0.13,
+                    x: 0,
                     y: 0,
-                    // reduces the width lithology chart so that the tick mark labels fit in the SVG viewport
-                    width: width * 0.6,
+                    width: width,
                     height: height
                 };
             case 'construction':
                 return {
-                    // x: adjusts starting point of well construction chart within the SVG view box
-                    // Note: (x: viewBox.right * 1) well construction chart is out of the SVG view box to the right
-                    // Note: (x: viewBox.right * 0) well construction chart touches edge of SVG view box to the left
-                    x: viewBox.right * 0.255,
+                    x: viewBox.right * 0.2,
                     y: 0,
-                    // reduces the width of the construction chart to produce a visually appealing effect
-                    width: width * 0.35,
+                    width: width * 0.6,
                     height: height
                 };
             default:
