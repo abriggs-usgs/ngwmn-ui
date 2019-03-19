@@ -1,7 +1,7 @@
 import { scaleLinear } from 'd3-scale';
 import { select } from 'd3-selection';
 
-import { drawAxisX, drawAxisY, drawAxisYWellDiagramDepth, drawAxisYWellDiagramElevation, drawAxisYLabel,
+import { drawAxisX, drawAxisYMain, drawAxisYWellDiagramDepth, drawAxisYWellDiagramElevation, drawAxisYLabelMain,
          drawAxisYLabelWellDiagramDepth, drawAxisYLabelWellDiagramElevation } from './axes';
 
 
@@ -34,9 +34,9 @@ describe('graph component', () => {
         });
     });
 
-    describe('drawAxisY function', () => {
+    describe('drawAxisYMain function', () => {
         it('renders', () => {
-            drawAxisY(svg, {
+            drawAxisYMain(svg, {
                 yScale: scaleLinear().domain([0, 1])
                                      .range([0, 100]),
                 layout: {x: 0, y: 0}
@@ -68,11 +68,11 @@ describe('graph component', () => {
     });
 
 
-    describe('drawAxisYLabel function', () => {
+    describe('drawAxisYLabelMain function', () => {
         it('renders without a unit label and with', () => {
-            let label = drawAxisYLabel(div, {});
+            let label = drawAxisYLabelMain(div, {});
             expect(label.text()).toEqual('Depth to water');
-            label = drawAxisYLabel(div, {unit: 'feet'}, label);
+            label = drawAxisYLabelMain(div, {unit: 'feet'}, label);
             expect(label.text()).toEqual('Depth to water, feet below land surface');
         });
     });

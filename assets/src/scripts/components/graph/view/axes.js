@@ -37,7 +37,7 @@ export const drawAxisX = function (elem, {xScale, layout}, axis) {
  * @param  {Object} context                 Context returned by previous invocation
  * @return {Object}                         Context for next invocation
  */
-export const drawAxisY = function (elem, {yScale, layout}, callback, context) {
+export const drawAxisYMain = function (elem, {yScale, layout}, callback, context) {
     context = context || {};
     context.axis = context.axis || elem
         .append('g')
@@ -149,7 +149,7 @@ export const drawAxisYWellDiagramElevation = function (elem, {yScale: yScaleElev
  * @param  {Object} label        Container previously-created by this function
  * @return {Object}              Container of label (span)
  */
-export const drawAxisYLabel = function (elem, {unit}, label) {
+export const drawAxisYLabelMain = function (elem, {unit}, label) {
     // Create a span for the label, if it doesn't already exist
     label = label || elem.append('span')
         .classed('y-label', true);

@@ -9,11 +9,11 @@ import { getSiteKey } from '../../../services/site-key';
 import {
     getChartPoints, getChartPosition, getConstructionElements,
     getCurrentWaterLevelUnit, getCurrentWellLog, getCursor, getCursorDatum, getLineSegments,
-    getLithology, getLithologyVisibility, getScaleX, getScaleY, getScaleYElevation, getViewBox,
-    getWellWaterLevel, setAxisYBBox, setCursor, setContainerSize
+    getLithology, getLithologyVisibility, getScaleX, getScaleY, getScaleYElevation, getViewBoxMain,
+    getWellWaterLevel, setAxisYMainBBox, setCursor, setContainerSize
 } from '../state';
 
-import { drawAxisX, drawAxisY, drawAxisYWellDiagramDepth, drawAxisYLabel, drawAxisYLabelWellDiagramDepth,
+import { drawAxisX, drawAxisYMain, drawAxisYWellDiagramDepth, drawAxisYLabelMain, drawAxisYLabelWellDiagramDepth,
     drawAxisYLabelWellDiagramElevation, drawAxisYWellDiagramElevation
 } from './axes';
 
@@ -113,12 +113,12 @@ const drawChart = function (elem, store, opts, chartType) {
                 }))));
         })
         // Draw the y-axis for the main.
-        .call(callIf(chartType === 'main', link(store, drawAxisY, createStructuredSelector({
+        .call(callIf(chartType === 'main', link(store, drawAxisYMain, createStructuredSelector({
             yScale: getScaleY(opts, chartType),
             layout: getChartPosition(opts, chartType)
         }), (bBox) => {
             // When the bounding box has changed, update the state with it.
-            store.dispatch(setAxisYBBox(opts.id, bBox));
+            store.dispatch(setAxisYMainBBox(opts.id, bBox));
         })))
         // Draw the y-axis for well depth on the lithology chart (which is part of the well diagram)
         .call(callIf(chartType === 'lithology', link(store, drawAxisYWellDiagramDepth, createStructuredSelector({
@@ -126,7 +126,7 @@ const drawChart = function (elem, store, opts, chartType) {
             layout: getChartPosition(opts, chartType)
         }), (bBox) => {
             // When the bounding box has changed, update the state with it.
-            store.dispatch(setAxisYBBox(opts.id, bBox));
+            store.dispatch(setAxisYMainBBox(opts.id, bBox));
         })))
         // Draw the another y-axis for the elevation on the lithology chart (which is part of the well diagram).
         .call(callIf(chartType === 'lithology', link(store, drawAxisYWellDiagramElevation, createStructuredSelector({
@@ -187,7 +187,7 @@ const drawConstructionGraph = (opts) => (elem, store) => {
                 .attr('xmlns', 'http://www.w3.org/2000/svg')
                 .call(link(store, (svg, viewBox) => {
                     svg.attr('viewBox', `${viewBox.left} ${viewBox.top} ${viewBox.right - viewBox.left} ${viewBox.bottom - viewBox.top}`);
-                }, getViewBox(opts)))
+                }, getViewBoxMain(opts)))
                 .call(svg => {
                     // Draw the charts
                     drawChart(svg, store, opts, 'lithology');
@@ -224,7 +224,7 @@ const drawWaterLevelsGraph = (opts) => (elem, store) => {
             .classed('chart-container', true)
             // Draw the y-axis label on the left of the chart.
             // See the SASS for the flexbox rules driving the layout.
-            .call(link(store, drawAxisYLabel, createStructuredSelector({
+            .call(link(store, drawAxisYLabelMain, createStructuredSelector({
                 unit: getCurrentWaterLevelUnit(opts)
             })))
             .call(elem => {
@@ -233,7 +233,7 @@ const drawWaterLevelsGraph = (opts) => (elem, store) => {
                     .attr('xmlns', 'http://www.w3.org/2000/svg')
                     .call(link(store, (svg, viewBox) => {
                         svg.attr('viewBox', `${viewBox.left} ${viewBox.top} ${viewBox.right - viewBox.left} ${viewBox.bottom - viewBox.top}`);
-                    }, getViewBox(opts)))
+                    }, getViewBoxMain(opts)))
                     .call(svg => {
                         // Draw the charts
                         const brush = drawChart(svg, store, opts, 'brush');

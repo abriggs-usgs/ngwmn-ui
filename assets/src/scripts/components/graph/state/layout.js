@@ -7,7 +7,7 @@ import { FOCUS_CIRCLE_RADIUS } from '../view/cursor';
 
 const MOUNT_POINT = 'components/graph/layout';
 const GRAPH_SIZE_SET = `${MOUNT_POINT}/GRAPH_SIZE_SET`;
-const AXIS_Y_BBOX_SET = `${MOUNT_POINT}/AXIS_Y_BBOX_SET`;
+const AXIS_Y_MAIN_BBOX_SET = `${MOUNT_POINT}/AXIS_Y_MAIN_BBOX_SET`;
 const VIEWPORT_RESET = `${MOUNT_POINT}/VIEWPORT_RESET`;
 const VIEWPORT_SET = `${MOUNT_POINT}/VIEWPORT_SET`;
 
@@ -92,9 +92,9 @@ export const getContainerSize = memoize(opts => createSelector(
  * @param {Number} options.width  width of y-axis bounding box
  * @param {Number} options.height height of y-axis bounding box
  */
-export const setAxisYBBox = function (id, {x, y, width, height}) {
+export const setAxisYMainBBox = function (id, {x, y, width, height}) {
     return {
-        type: AXIS_Y_BBOX_SET,
+        type: AXIS_Y_MAIN_BBOX_SET,
         payload: {
             id,
             axisYBBox: {
@@ -107,12 +107,75 @@ export const setAxisYBBox = function (id, {x, y, width, height}) {
     };
 };
 
+
+//TODO add comments
+export const setAxisYWellDiagramDepthBBox = function (id, {x, y, width, height}) {
+    return {
+        type: AXIS_Y_WELL_DIAGRAM_DEPTH_BBOX_SET,
+        payload: {
+            id,
+            axisYBBox: {
+                x,
+                y,
+                width,
+                height
+            }
+        }
+    };
+};
+
+
+//TODO add comments
+export const setAxisYWellDiagraElevationBBox = function (id, {x, y, width, height}) {
+    return {
+        type: AXIS_Y_WELL_DIAGRAM_ELEVATION_BBOX_SET,
+        payload: {
+            id,
+            axisYBBox: {
+                x,
+                y,
+                width,
+                height
+            }
+        }
+    };
+};
+
+
+
 /**
  * Selector to return the current container size
  * @param  {Object} state Redux state
  * @return {Object}       Layout
  */
-export const getAxisYBBox = memoize(opts => createSelector(
+export const getAxisYMainBBox = memoize(opts => createSelector(
+    state => state[MOUNT_POINT].axisYBBoxes || {},
+    (axisYBBoxes) => {
+        return axisYBBoxes[opts.id] || {
+            x: 0,
+            y: 0,
+            width: 0,
+            height: 0
+        };
+    }
+));
+
+//TODO add comments
+export const getAxisYWellDiagramDepthBBox = memoize(opts => createSelector(
+    state => state[MOUNT_POINT].axisYBBoxes || {},
+    (axisYBBoxes) => {
+        return axisYBBoxes[opts.id] || {
+            x: 0,
+            y: 0,
+            width: 0,
+            height: 0
+        };
+    }
+));
+
+
+//TODO add comments
+export const getAxisYWellDiagramElevationBBox = memoize(opts => createSelector(
     state => state[MOUNT_POINT].axisYBBoxes || {},
     (axisYBBoxes) => {
         return axisYBBoxes[opts.id] || {
@@ -130,17 +193,11 @@ export const getAxisYBBox = memoize(opts => createSelector(
  * @param  {Object} state   Redux state
  * @return {Object}         {x, y, width, height} of viewBox
  */
-export const getViewBox = memoize((opts) => createSelector(
+export const getViewBoxMain = memoize((opts) => createSelector(
     getContainerSize(opts),
-    getAxisYBBox(opts),
+    getAxisYMainBBox(opts),
     (containerSize, axisYBBox) => {
-        let aspectRatio;
-        if (opts.graphType === 'water-levels') {
-            aspectRatio = containerSize.height / containerSize.width || 0;
-        } else if (opts.graphType === 'construction') {
-            // add an arbitrary number to the aspect ratio to keep it long and not wide
-            aspectRatio = containerSize.height / containerSize.width + 1 || 0;
-        }
+        const aspectRatio = containerSize.height / containerSize.width || 0;
         const width = containerSize.width + axisYBBox.width;
         const height = width * aspectRatio;
 
@@ -153,13 +210,32 @@ export const getViewBox = memoize((opts) => createSelector(
     }
 ));
 
+//TODO add comments here
+export const getViewBoxWellDiagram = memoize((opts) => createSelector(
+    getContainerSize(opts),
+    getAxisYWellDiagramDepthBBox(opts),
+    getAxisYWellDiagramElevationBBox(opts),
+    (containerSize, axisYWellDiagramDepthBBox, axisYWellDiagramElevationBBox) => {
+        const aspectRatio = containerSize.height / containerSize.width || 0;
+        const width = containerSize.width + axisYWellDiagramDepthBBox.width + axisYWellDiagramElevationBBox.width;
+        const height = width * aspectRatio;
+
+        return {
+            left: axisYWellDiagramDepthBBox.x,
+            top: 0,
+            right: axisYWellDiagramDepthBBox.x + width,
+            bottom: height
+        };
+    }
+));
+
 /**
  * Returns the position of a chart type within the graph container.
  * @param  {String}     graph Chart type identifier
  * @return {Function}   Selector for chart position
  */
 export const getChartPosition = memoize((opts, chartType) => createSelector(
-    getViewBox(opts),
+    getViewBoxMain(opts),
     (viewBox) => {
         const height = viewBox.bottom - viewBox.top;
         const width = viewBox.right;
@@ -223,7 +299,7 @@ export const reducer = function (state = {}, action) {
                     ...{[action.payload.id]: action.payload.size}
                 }
             };
-        case AXIS_Y_BBOX_SET:
+        case AXIS_Y_MAIN_BBOX_SET:
             return {
                 ...state,
                 axisYBBoxes: {

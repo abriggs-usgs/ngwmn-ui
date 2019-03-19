@@ -3,8 +3,8 @@ import { combineReducers, createStore } from 'redux';
 import getMockStore from 'ngwmn/store.mock';
 
 import reducer from './layout';
-import { getAxisYBBox, getChartPosition, getContainerSize, getViewBox,
-         getViewport, resetViewport, setAxisYBBox, setContainerSize,
+import { getAxisYMainBBox, getChartPosition, getContainerSize, getViewBoxMain,
+         getViewport, resetViewport, setAxisYMainBBox, setContainerSize,
          setViewport } from './layout';
 
 
@@ -54,14 +54,14 @@ describe('graph component layout state', () => {
         expect(getChartPosition(mockOpts, 'construction')(store.getState())).not.toBe(null);
     });
 
-    it('setAxisYBBox and getAxisYBBox works', () => {
+    it('setAxisYMainBBox and getAxisYMainBBox works', () => {
         const bBox = {x: -10, y: -5, width: 10, height: 20};
-        store.dispatch(setAxisYBBox(mockOpts.id, bBox));
-        expect(getAxisYBBox(mockOpts)(store.getState())).toEqual(bBox);
+        store.dispatch(setAxisYMainBBox(mockOpts.id, bBox));
+        expect(getAxisYMainBBox(mockOpts)(store.getState())).toEqual(bBox);
     });
 
-    it('getViewBox works', () => {
+    it('getViewBoxMain works', () => {
         store = getMockStore();
-        expect(getViewBox(store.getState())).not.toBe(null);
+        expect(getViewBoxMain(store.getState())).not.toBe(null);
     });
 });
