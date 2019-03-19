@@ -7,10 +7,10 @@ import { callIf } from 'ngwmn/lib/utils';
 import { getSiteKey } from '../../../services/site-key';
 
 import {
-    getChartPoints, getChartPosition, getConstructionElements,
+    getChartPoints, getChartPositionMain, getConstructionElements,
     getCurrentWaterLevelUnit, getCurrentWellLog, getCursor, getCursorDatum, getLineSegments,
     getLithology, getLithologyVisibility, getScaleX, getScaleY, getScaleYElevation, getViewBoxMain,
-    getWellWaterLevel, setAxisYMainBBox, setCursor, setContainerSize
+    getWellWaterLevel, setAxisYMainBBox, setCursor, setContainerSizeMain
 } from '../state';
 
 import { drawAxisX, drawAxisYMain, drawAxisYWellDiagramDepth, drawAxisYLabelMain, drawAxisYLabelWellDiagramDepth,
@@ -43,7 +43,7 @@ const drawClipPath = function (elem, store, opts, chartType) {
                         .attr('y', chartPosition.y)
                         .attr('width', chartPosition.width)
                         .attr('height', chartPosition.height);
-                }, getChartPosition(opts, chartType)));
+                }, getChartPositionMain(opts, chartType)));
 };
 
 const observeSize = function (elem, opts, store) {
@@ -59,7 +59,7 @@ const observeSize = function (elem, opts, store) {
         };
         if (size.width !== newSize.width || size.height !== newSize.height) {
             size = newSize;
-            store.dispatch(setContainerSize(opts.id, size));
+            store.dispatch(setContainerSizeMain(opts.id, size));
         }
     });
     observer.observe(node);
@@ -115,7 +115,7 @@ const drawChart = function (elem, store, opts, chartType) {
         // Draw the y-axis for the main.
         .call(callIf(chartType === 'main', link(store, drawAxisYMain, createStructuredSelector({
             yScale: getScaleY(opts, chartType),
-            layout: getChartPosition(opts, chartType)
+            layout: getChartPositionMain(opts, chartType)
         }), (bBox) => {
             // When the bounding box has changed, update the state with it.
             store.dispatch(setAxisYMainBBox(opts.id, bBox));
@@ -123,7 +123,7 @@ const drawChart = function (elem, store, opts, chartType) {
         // Draw the y-axis for well depth on the lithology chart (which is part of the well diagram)
         .call(callIf(chartType === 'lithology', link(store, drawAxisYWellDiagramDepth, createStructuredSelector({
             yScale: getScaleY(opts, chartType),
-            layout: getChartPosition(opts, chartType)
+            layout: getChartPositionMain(opts, chartType)
         }), (bBox) => {
             // When the bounding box has changed, update the state with it.
             store.dispatch(setAxisYMainBBox(opts.id, bBox));
@@ -131,12 +131,12 @@ const drawChart = function (elem, store, opts, chartType) {
         // Draw the another y-axis for the elevation on the lithology chart (which is part of the well diagram).
         .call(callIf(chartType === 'lithology', link(store, drawAxisYWellDiagramElevation, createStructuredSelector({
             yScale: getScaleYElevation(opts, chartType),
-            layout: getChartPosition(opts, chartType)
+            layout: getChartPositionMain(opts, chartType)
         }))))
         // Draw the x-axis, only for the main chart.
         .call(callIf(chartType === 'main', link(store, drawAxisX, createStructuredSelector({
             xScale: getScaleX(opts, chartType),
-            layout: getChartPosition(opts, chartType)
+            layout: getChartPositionMain(opts, chartType)
         }))))
         // To capture mouse events, draw an overlay rect and attach event
         // handlers to it.
@@ -150,7 +150,7 @@ const drawChart = function (elem, store, opts, chartType) {
                         .attr('y', layout.y)
                         .attr('width', layout.width)
                         .attr('height', layout.height);
-                }, getChartPosition(opts, chartType)))
+                }, getChartPositionMain(opts, chartType)))
                 // Set the cursor on mouseenter and clear on mouseout
                 .call(link(store, (rect, xScale) => {
                     rect.on('mouseover', () => {

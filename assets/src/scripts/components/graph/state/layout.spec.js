@@ -3,8 +3,8 @@ import { combineReducers, createStore } from 'redux';
 import getMockStore from 'ngwmn/store.mock';
 
 import reducer from './layout';
-import { getAxisYMainBBox, getChartPosition, getContainerSize, getViewBoxMain,
-         getViewport, resetViewport, setAxisYMainBBox, setContainerSize,
+import { getAxisYMainBBox, getChartPositionMain, getContainerSizeMain, getViewBoxMain,
+         getViewport, resetViewport, setAxisYMainBBox, setContainerSizeMain,
          setViewport } from './layout';
 
 
@@ -21,9 +21,9 @@ describe('graph component layout state', () => {
         store = createStore(combineReducers(reducer), {});
     });
 
-    it('setContainerSize works', () => {
-        store.dispatch(setContainerSize(mockOpts.id, {width: 10, height: 20}));
-        expect(getContainerSize(mockOpts)(store.getState())).toEqual({width: 10, height: 20});
+    it('setContainerSizeMain works', () => {
+        store.dispatch(setContainerSizeMain(mockOpts.id, {width: 10, height: 20}));
+        expect(getContainerSizeMain(mockOpts)(store.getState())).toEqual({width: 10, height: 20});
     });
 
     it('setViewport and resetViewport works with mock store', () => {
@@ -38,20 +38,20 @@ describe('graph component layout state', () => {
         expect(getViewport(mockOpts)(store.getState())).not.toEqual(null);
     });
 
-    it('getChartPosition works', () => {
+    it('getChartPositionMain works', () => {
         // Works on container size
-        expect(getChartPosition(mockOpts, 'main')(store.getState())).not.toBe(null);
-        expect(getChartPosition(mockOpts, 'brush')(store.getState())).not.toBe(null);
-        expect(getChartPosition(mockOpts, 'lithology')(store.getState())).not.toBe(null);
-        expect(getChartPosition(mockOpts, 'construction')(store.getState())).not.toBe(null);
+        expect(getChartPositionMain(mockOpts, 'main')(store.getState())).not.toBe(null);
+        expect(getChartPositionMain(mockOpts, 'brush')(store.getState())).not.toBe(null);
+        expect(getChartPositionMain(mockOpts, 'lithology')(store.getState())).not.toBe(null);
+        expect(getChartPositionMain(mockOpts, 'construction')(store.getState())).not.toBe(null);
 
         // Works with specific container size
-        store.dispatch(setContainerSize(mockOpts.id, {width: 10, height: 20}));
-        expect(getContainerSize(mockOpts)(store.getState())).toEqual({width: 10, height: 20});
-        expect(getChartPosition(mockOpts, 'main')(store.getState())).not.toBe(null);
-        expect(getChartPosition(mockOpts, 'brush')(store.getState())).not.toBe(null);
-        expect(getChartPosition(mockOpts, 'lithology')(store.getState())).not.toBe(null);
-        expect(getChartPosition(mockOpts, 'construction')(store.getState())).not.toBe(null);
+        store.dispatch(setContainerSizeMain(mockOpts.id, {width: 10, height: 20}));
+        expect(getContainerSizeMain(mockOpts)(store.getState())).toEqual({width: 10, height: 20});
+        expect(getChartPositionMain(mockOpts, 'main')(store.getState())).not.toBe(null);
+        expect(getChartPositionMain(mockOpts, 'brush')(store.getState())).not.toBe(null);
+        expect(getChartPositionMain(mockOpts, 'lithology')(store.getState())).not.toBe(null);
+        expect(getChartPositionMain(mockOpts, 'construction')(store.getState())).not.toBe(null);
     });
 
     it('setAxisYMainBBox and getAxisYMainBBox works', () => {

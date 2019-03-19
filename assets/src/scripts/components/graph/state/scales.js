@@ -2,7 +2,7 @@ import { scaleLinear } from 'd3-scale';
 import memoize from 'fast-memoize';
 import { createSelector } from 'reselect';
 
-import { getChartPosition } from './layout';
+import { getChartPositionMain } from './layout';
 import { getDomainX, getDomainY } from './points';
 import { getCurrentWellLog } from '../state/well-log';
 
@@ -14,7 +14,7 @@ import { getCurrentWellLog } from '../state/well-log';
  */
 export const getScaleX = memoize((opts, chartType) => createSelector(
     getDomainX(opts, chartType),
-    getChartPosition(opts, chartType),
+    getChartPositionMain(opts, chartType),
     (domainX, size) => {
         return scaleLinear()
             .domain(domainX)
@@ -29,7 +29,7 @@ export const getScaleX = memoize((opts, chartType) => createSelector(
  */
 export const getScaleY = memoize((opts, chartType) => createSelector(
     getDomainY(opts, chartType),
-    getChartPosition(opts, chartType),
+    getChartPositionMain(opts, chartType),
     (domainY, size) => {
         return scaleLinear()
             .domain(domainY)
@@ -45,7 +45,7 @@ export const getScaleY = memoize((opts, chartType) => createSelector(
  */
 export const getScaleYElevation = memoize((opts, chartType) => createSelector(
     getDomainY(opts, chartType),
-    getChartPosition(opts, chartType),
+    getChartPositionMain(opts, chartType),
     getCurrentWellLog(opts),
     (domainY, size, wellLog) => {
         return scaleLinear()

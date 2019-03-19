@@ -8,6 +8,7 @@ import { FOCUS_CIRCLE_RADIUS } from '../view/cursor';
 const MOUNT_POINT = 'components/graph/layout';
 const GRAPH_SIZE_SET = `${MOUNT_POINT}/GRAPH_SIZE_SET`;
 const AXIS_Y_MAIN_BBOX_SET = `${MOUNT_POINT}/AXIS_Y_MAIN_BBOX_SET`;
+const AXIS_Y_WELL_DIAGRAM_BBOX_SET = `${MOUNT_POINT}/AXIS_Y_WELL_DIAGRAM_BBOX_SET`
 const VIEWPORT_RESET = `${MOUNT_POINT}/VIEWPORT_RESET`;
 const VIEWPORT_SET = `${MOUNT_POINT}/VIEWPORT_SET`;
 
@@ -60,7 +61,18 @@ export const getViewport = memoize(opts => createSelector(
  * @param {Number} options.width  Width of graph container
  * @param {Number} options.height Height of graph container
  */
-export const setContainerSize = function (id, {width, height}) {
+export const setContainerSizeMain = function (id, {width, height}) {
+    return {
+        type: GRAPH_SIZE_SET,
+        payload: {
+            id,
+            size: {width, height}
+        }
+    };
+};
+
+//TODO add comments
+export const setContainerSizeWellDiagram = function (id, {width, height}) {
     return {
         type: GRAPH_SIZE_SET,
         payload: {
@@ -75,7 +87,18 @@ export const setContainerSize = function (id, {width, height}) {
  * @param  {Object} state Redux state
  * @return {Object}       Layout
  */
-export const getContainerSize = memoize(opts => createSelector(
+export const getContainerSizeMain = memoize(opts => createSelector(
+    state => state[MOUNT_POINT].graphSizes || {},
+    (graphSizes) => {
+        return graphSizes[opts.id] || {
+            width: 0,
+            height: 0
+        };
+    }
+));
+
+//TODO add comments
+export const getContainerSizeWellDiagram = memoize(opts => createSelector(
     state => state[MOUNT_POINT].graphSizes || {},
     (graphSizes) => {
         return graphSizes[opts.id] || {
@@ -194,7 +217,7 @@ export const getAxisYWellDiagramElevationBBox = memoize(opts => createSelector(
  * @return {Object}         {x, y, width, height} of viewBox
  */
 export const getViewBoxMain = memoize((opts) => createSelector(
-    getContainerSize(opts),
+    getContainerSizeMain(opts),
     getAxisYMainBBox(opts),
     (containerSize, axisYBBox) => {
         const aspectRatio = containerSize.height / containerSize.width || 0;
@@ -212,7 +235,7 @@ export const getViewBoxMain = memoize((opts) => createSelector(
 
 //TODO add comments here
 export const getViewBoxWellDiagram = memoize((opts) => createSelector(
-    getContainerSize(opts),
+    getContainerSizeMain(opts),
     getAxisYWellDiagramDepthBBox(opts),
     getAxisYWellDiagramElevationBBox(opts),
     (containerSize, axisYWellDiagramDepthBBox, axisYWellDiagramElevationBBox) => {
@@ -234,7 +257,7 @@ export const getViewBoxWellDiagram = memoize((opts) => createSelector(
  * @param  {String}     graph Chart type identifier
  * @return {Function}   Selector for chart position
  */
-export const getChartPosition = memoize((opts, chartType) => createSelector(
+export const getChartPositionMain = memoize((opts, chartType) => createSelector(
     getViewBoxMain(opts),
     (viewBox) => {
         const height = viewBox.bottom - viewBox.top;
@@ -282,6 +305,46 @@ export const getChartPosition = memoize((opts, chartType) => createSelector(
         }
     }
 ));
+
+
+
+//TODO add comments
+export const getChartPositionWellDiagram = memoize((opts, chartType) => createSelector(
+    getViewBoxWellDiagram(opts),
+    (viewBox) => {
+        const height = viewBox.bottom - viewBox.top;
+        const width = viewBox.right;
+        const PADDING = 10;
+        switch (chartType) {
+            case 'lithology':
+                return {
+                    // x: adjusts the horizontal starting point of well lithology chart within the SVG view box
+                    // Note: (x: viewBox.right * 1) well construction chart is out of the SVG view box to the right
+                    // Note: (x: viewBox.right * 0) start of well construction chart touches edge of SVG view box to the left
+                    x: viewBox.right * 0.13,
+                    y: 0,
+                    // reduces the width lithology chart so that the tick mark labels fit in the SVG viewport
+                    width: width * 0.6,
+                    height: height
+                };
+            case 'construction':
+                return {
+                    // x: adjusts starting point of well construction chart within the SVG view box
+                    // Note: (x: viewBox.right * 1) well construction chart is out of the SVG view box to the right
+                    // Note: (x: viewBox.right * 0) well construction chart touches edge of SVG view box to the left
+                    x: viewBox.right * 0.255,
+                    y: 0,
+                    // reduces the width of the construction chart to produce a visually appealing effect
+                    width: width * 0.35,
+                    height: height
+                };
+            default:
+                return null;
+        }
+    }
+));
+
+
 
 /**
  * Layout reducer

@@ -8,7 +8,7 @@ import {
     getSelectedConstructionId, getVisibleConstructionIds
 } from 'ngwmn/components/well-log/state/index';
 import { getCursorDatum } from './cursor';
-import { getChartPosition } from './layout';
+import { getChartPositionMain } from './layout';
 import { getScaleX, getScaleY } from './scales';
 
 
@@ -61,7 +61,7 @@ export const getWellLogEntriesExtentY = memoize(opts => createSelector(
  */
 export const getLithology = memoize((opts, chartType) => createSelector(
     getWellLogEntries(opts),
-    getChartPosition(opts, chartType),
+    getChartPositionMain(opts, chartType),
     getScaleY(opts, chartType),
     (wellLogEntries, layout, yScale) => {
         return wellLogEntries.map(entry => {
@@ -171,7 +171,7 @@ const getWellRadius = memoize((opts) => createSelector(
  */
 const getRadiusScale = memoize((opts, chartType) => createSelector(
     getWellRadius(opts),
-    getChartPosition(opts, chartType),
+    getChartPositionMain(opts, chartType),
     (wellRadius, chartPos) => {
         return scaleLinear()
             .domain([-wellRadius, wellRadius])

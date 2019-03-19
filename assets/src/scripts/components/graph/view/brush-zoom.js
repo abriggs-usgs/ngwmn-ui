@@ -4,7 +4,7 @@ import { event } from 'd3-selection';
 import { zoom as d3Zoom, zoomIdentity } from 'd3-zoom';
 
 import { listen } from 'ngwmn/lib/d3-redux';
-import { getChartPosition, getScaleX, getViewport, resetViewport, setViewport
+import { getChartPositionMain, getScaleX, getViewport, resetViewport, setViewport
 } from '../state';
 
 
@@ -22,14 +22,14 @@ export default function (elem, store, opts, mainChart, brushChart) {
     // Apply the zoom handlers to the main chart
     mainChart.call(zoom);
 
-    listen(store, getChartPosition(opts, 'main'), function (chartPosMain) {
+    listen(store, getChartPositionMain(opts, 'main'), function (chartPosMain) {
         const extent = [[chartPosMain.x, chartPosMain.y], [chartPosMain.width, chartPosMain.height]];
         zoom.translateExtent(extent)
             .extent(extent);
     });
 
     // Update the brush extents in response to changes in the graph size.
-    listen(store, getChartPosition(opts, 'brush'), function (chartPosBrush) {
+    listen(store, getChartPositionMain(opts, 'brush'), function (chartPosBrush) {
         brush.extent([[chartPosBrush.x, chartPosBrush.y],
                      [chartPosBrush.x + chartPosBrush.width, chartPosBrush.y + chartPosBrush.height]]);
         // Apply the brush to the DOM
@@ -60,7 +60,7 @@ export default function (elem, store, opts, mainChart, brushChart) {
     listen(store, createStructuredSelector({
         xScaleBrush: getScaleX(opts, 'brush'),
         viewport: getViewport(opts),
-        chartPosMain: getChartPosition(opts, 'main')
+        chartPosMain: getChartPositionMain(opts, 'main')
     }), function ({xScaleBrush, viewport, chartPosMain}) {
         mainChart
             .call(zoom.transform, zoomIdentity
@@ -75,7 +75,7 @@ export default function (elem, store, opts, mainChart, brushChart) {
         .on('brush end', function () {
             const state = store.getState();
             const xScaleBrush = getScaleX(opts, 'brush')(state);
-            const chartPosMain = getChartPosition(opts, 'main')(state);
+            const chartPosMain = getChartPositionMain(opts, 'main')(state);
             // Ignore brush-by-zoom
             if (event.sourceEvent && event.sourceEvent.type === 'zoom') {
                 return;
